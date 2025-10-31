@@ -1,0 +1,44 @@
+name: Deploy Vite App to GitHub Pages
+
+on:
+  # Triggers the workflow when pushing code to the 'main' branch
+  push:
+    branches:
+      - main
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+  build_and_deploy:
+    # Use the latest Ubuntu environment for the job
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+    
+    steps:
+      - name: Checkout repository 🛎️
+        # Fetches your code from the main branch
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js ☕
+        # Sets up the correct version of Node for running npm install and build
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20' # Recommended Node version
+
+      - name: Install dependencies and Build ⚙️
+        run: |
+          npm install
+          npm run build # This command runs Vite and creates the static 'dist' folder
+
+      - name: Deploy to GitHub Pages 🚀
+        # This is a specialized action for deploying static sites
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          # Automatically provided token to authorize deployment
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          # Tells the action to deploy the contents of the 'dist' folder
+          publish_dir: ./dist
+          # Deploy to the 'gh-pages' branch
+          publish_branch: gh-pages
